@@ -9,7 +9,8 @@ pipeline {
         stage('Checkout') {
             steps {
               git branch: 'main',
-              url: 'https://github.com/bryanjoachim/java_app.git'
+                    url: 'https://github.com/bryanjoachim/java_app.git',
+                    credentialsId: 'github-creds'
             }
         }
 
@@ -31,7 +32,7 @@ pipeline {
         }
         stage('install') {
             steps {
-                sh 'mvn package'
+                sh 'mvn install'
             }
         }
         
@@ -40,17 +41,5 @@ pipeline {
                 sh 'mvn clean package'
             }
         }
-        
-        stage('docker build'){
-            steps {
-        withCredentials([usernamePassword(credentialsId: 'docker-creds', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-            sh '''
-                docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-                docker build -t $DOCKER_USERNAME/myapp .
-                docker push $DOCKER_USERNAME/myapp
-            '''
-        }
-        }
     }
-}
 }
