@@ -2,20 +2,21 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven 3.8.5'
-        jdk 'JDK 17'
+       maven '3.9.9'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/your-username/my-java-app.git'
+              git branch: 'main',
+                    url: 'https://github.com/bryanjoachim/java_app.git',
+                    credentialsId: 'github-creds'
             }
         }
 
-        stage('Build') {
+        stage('compile') {
             steps {
-                sh 'mvn clean package'
+                sh 'mvn compile'
             }
         }
 
@@ -24,21 +25,21 @@ pipeline {
                 sh 'mvn test'
             }
         }
-
-        stage('Docker Build & Run') {
+         stage('package') {
             steps {
-                script {
-                    def imageName = "jenkins-demo-app"
-                    sh "docker build -t ${imageName} ."
-                    sh "docker run -d -p 8080:8080 --name ${imageName}-container ${imageName}"
-                }
+                sh 'mvn package'
             }
         }
-    }
-
-    post {
-        always {
-            echo 'Pipeline completed.'
+        stage('install') {
+            steps {
+                sh 'mvn package'
+            }
+        }
+        
+        stage('clean package') {
+            steps {
+                sh 'mvn clean package'
+            }
         }
     }
 }
