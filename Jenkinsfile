@@ -31,7 +31,7 @@ pipeline {
         }
         stage('install') {
             steps {
-                sh 'mvn install
+                sh 'mvn install'
             }
         }
         
@@ -53,4 +53,12 @@ pipeline {
         }
     }
 }
+
+post {
+        failure {
+            mail to: 'joachim.bryan1@gmail.com',
+                 subject: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "Something went wrong. Check the Jenkins build at: ${env.BUILD_URL}"
+        }
+    }
 }
